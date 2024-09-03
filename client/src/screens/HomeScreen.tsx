@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import MonthPicker from 'react-native-month-year-picker';
 
 export default function HomeScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+  const [colorShift] = useState(new Animated.Value(0));
 
   const onValueChange = (_: any, newDate: Date | undefined) => {
     setShowPicker(false);
@@ -18,10 +19,41 @@ export default function HomeScreen() {
     setShowPicker(true);
   };
 
+  const handleCreateEvent = () => {
+    // Handle create event action here
+    console.log('Create Event button pressed');
+  };
+
+  const startColorAnimation = () => {
+    Animated.loop(
+      Animated.timing(colorShift, {
+        toValue: 1,
+        duration: 2000, // duration of one cycle
+        easing: Easing.linear,
+        useNativeDriver: false,
+      })
+    ).start();
+  };
+  const stopColorAnimation = () => {
+    colorShift.stopAnimation(() => {
+      colorShift.setValue(0);
+    });
+  };
+
+  const buttonBorderColor = colorShift.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['#ff00ff', '#00ffff', '#ff00ff'], // Cycle between these colors
+  });
+
+  const buttonShadowColor = colorShift.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['#ff00ff', '#00ffff', '#ff00ff'], // Cycle between these colors
+  });
+
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: '#fff' }}>
+    <View style={styles.container}>
       <TouchableOpacity onPress={showPickerModal}>
-        <Text style={{ fontSize: 24, textAlign: 'center' }}>
+        <Text style={styles.dateText}>
           {selectedDate.getFullYear()} {selectedDate.getMonth() + 1}
         </Text>
       </TouchableOpacity>
@@ -37,7 +69,7 @@ export default function HomeScreen() {
         hideArrows={false}
         disableAllTouchEventsForDisabledDays={true}
         renderArrow={(direction: string) => (
-          <Text>{direction === 'left' ? '<' : '>'}</Text>
+          <Text style={styles.arrow}>{direction === 'left' ? '<' : '>'}</Text>
         )}
         hideExtraDays={false}
         disableMonthChange={false}
@@ -47,6 +79,14 @@ export default function HomeScreen() {
           console.log('month changed', month);
         }}
         enableSwipeMonths={true}
+        theme={{
+          calendarBackground: '#000',
+          textSectionTitleColor: '#fff',
+          dayTextColor: '#fff',
+          todayTextColor: '#00adf5',
+          monthTextColor: '#fff',
+          arrowColor: '#fff',
+        }}
       />
 
       {showPicker && (
@@ -58,6 +98,58 @@ export default function HomeScreen() {
           locale="en"
         />
       )}
+
+      <TouchableOpacity
+        onPressIn={startColorAnimation}
+        onPressOut={stopColorAnimation}
+        onPress={handleCreateEvent}
+        style={styles.button}
+      >
+        <Animated.View
+          style={[
+            styles.button,
+            {
+              borderColor: buttonBorderColor,
+              shadowColor: buttonShadowColor,
+            },
+          ]}
+        >
+          <Text style={styles.buttonText}>Create Event</Text>
+        </Animated.View>
+      </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#000', // Set background to black
+  },
+  dateText: {
+    fontSize: 24,
+    textAlign: 'center',
+    marginBottom: 16,
+    color: '#fff', // White text color
+  },
+  button: {
+    backgroundColor: '#000',
+    padding: 10,
+    marginTop: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 2,
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 0 },
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  arrow: {
+    color: '#fff',
+    fontSize: 20,
+  },
+});
