@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import MonthPicker from 'react-native-month-year-picker';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../types/Navigation'; // Adjust the path accordingly
+
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
 export default function HomeScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [colorShift] = useState(new Animated.Value(0));
+
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const onValueChange = (_: any, newDate: Date | undefined) => {
     setShowPicker(false);
@@ -20,8 +27,8 @@ export default function HomeScreen() {
   };
 
   const handleCreateEvent = () => {
-    // Handle create event action here
-    console.log('Create Event button pressed');
+    // Navigate to CreateEventScreen
+    navigation.navigate('CreateEvent');
   };
 
   const startColorAnimation = () => {
@@ -34,6 +41,7 @@ export default function HomeScreen() {
       })
     ).start();
   };
+
   const stopColorAnimation = () => {
     colorShift.stopAnimation(() => {
       colorShift.setValue(0);
@@ -59,7 +67,7 @@ export default function HomeScreen() {
       </TouchableOpacity>
 
       <Calendar
-        current={selectedDate}
+        current={selectedDate.toISOString().split('T')[0]}  // Format Date to string
         minDate={'2020-05-10'}
         maxDate={'2025-05-30'}
         onDayPress={(day: any) => {
@@ -102,7 +110,7 @@ export default function HomeScreen() {
       <TouchableOpacity
         onPressIn={startColorAnimation}
         onPressOut={stopColorAnimation}
-        onPress={handleCreateEvent}
+        onPress={handleCreateEvent} // Navigate on press
         style={styles.button}
       >
         <Animated.View
