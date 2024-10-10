@@ -124,6 +124,17 @@ export default function HomeScreen() {
         >
           <Text style={styles.buttonText}>Create Event</Text>
         </Animated.View>
+        <Animated.View
+          style={[
+            styles.button,
+            {
+              borderColor: buttonBorderColor,
+              shadowColor: buttonShadowColor,
+            },
+          ]}
+        >
+          <Text style={styles.buttonText}>View Event</Text>
+        </Animated.View>
       </TouchableOpacity>
     </View>
   );
