@@ -2,5 +2,6 @@
 export type RootStackParamList = {
     Home: undefined;
     CreateEvent: undefined;
+    ViewEvents: undefined;
   };
   

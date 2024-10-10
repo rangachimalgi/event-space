@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'r
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker'; // For dropdowns
 import { Alert } from 'react-native';
+import axios from 'axios';
 
 export default function CreateEventScreen() {
   const [name, setName] = useState('');
@@ -27,29 +28,36 @@ export default function CreateEventScreen() {
   };
 
   const handleSubmit = () => {
-    console.log('Event Details:', { name, email, phoneNumber, date, time, selectedHall });
-    // Display the alert dialog
-    Alert.alert(
-      "Event Created", // Title of the alert
-      "Your event has been successfully created!", // Message showing in the alert
-      [
-        {
-          text: "OK",
-          onPress: () => {
-            console.log("OK Pressed");
-            // Reset the form fields here
-            setName('');
-            setEmail('');
-            setPhoneNumber('');
-            setDate(new Date());
-            setTime(new Date());
-            setSelectedHall('Hall 1');
+    const eventDetails = {
+      name,
+      email,
+      phoneNumber,
+      date: date.toISOString(),  // Send date as ISO string
+      time: time.toISOString(),  // Send time as ISO string
+      hall: selectedHall,
+    };
+
+    axios.post('http://192.168.29.122:5000/api/events', eventDetails)
+      .then((response) => {
+        Alert.alert('Event Created', 'Your event has been successfully created!', [
+          {
+            text: "OK",
+            onPress: () => {
+              setName('');
+              setEmail('');
+              setPhoneNumber('');
+              setDate(new Date());
+              setTime(new Date());
+              setSelectedHall('Hall 1');
+            }
           }
-        } // Button to dismiss the alert and reset the form
-      ]
-    );
-  };
-  
+        ]);
+      })
+      .catch((error) => {
+        console.error('Error creating event:', error);
+        Alert.alert('Error', 'There was an issue creating the event.');
+      });
+  };  
   
   return (
     <View style={styles.container}>

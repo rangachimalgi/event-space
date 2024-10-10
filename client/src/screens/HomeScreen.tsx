@@ -31,6 +31,11 @@ export default function HomeScreen() {
     navigation.navigate('CreateEvent');
   };
 
+  const handleViewEvents = () => {
+    // Navigate to ViewEventsScreen (adjust this to match your actual screen name)
+    navigation.navigate('ViewEvents');
+  };
+
   const startColorAnimation = () => {
     Animated.loop(
       Animated.timing(colorShift, {
@@ -107,10 +112,11 @@ export default function HomeScreen() {
         />
       )}
 
+      {/* Button for Creating Event */}
       <TouchableOpacity
         onPressIn={startColorAnimation}
         onPressOut={stopColorAnimation}
-        onPress={handleCreateEvent} // Navigate on press
+        onPress={handleCreateEvent} // Navigate to Create Event
         style={styles.button}
       >
         <Animated.View
@@ -124,6 +130,15 @@ export default function HomeScreen() {
         >
           <Text style={styles.buttonText}>Create Event</Text>
         </Animated.View>
+      </TouchableOpacity>
+
+      {/* Button for Viewing Events */}
+      <TouchableOpacity
+        onPressIn={startColorAnimation}
+        onPressOut={stopColorAnimation}
+        onPress={handleViewEvents} // Navigate to View Events
+        style={styles.button}
+      >
         <Animated.View
           style={[
             styles.button,
@@ -133,7 +148,7 @@ export default function HomeScreen() {
             },
           ]}
         >
-          <Text style={styles.buttonText}>View Event</Text>
+          <Text style={styles.buttonText}>View Events</Text>
         </Animated.View>
       </TouchableOpacity>
     </View>
