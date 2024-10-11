@@ -16,7 +16,7 @@ const eventSchema: Schema = new Schema({
   email: { type: String, required: true },
   phoneNumber: { type: String, required: true },
   date: { type: Date, required: true },
-  time: { type: Date, required: true },
+  time: { type: String, required: true },
   hall: { type: String, required: true }
 });
 

@@ -13,7 +13,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       email,
       phoneNumber,
       date: new Date(date),   // Convert to Date object if necessary
-      time: new Date(time),   // Convert to Date object if necessary
+      time,   // Convert to Date object if necessary
       hall
     });
 
