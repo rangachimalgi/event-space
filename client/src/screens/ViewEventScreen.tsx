@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../types/Navigation'; // Adjust the path accordingly
 
 // Define the Event interface
 interface Event {
@@ -8,30 +11,38 @@ interface Event {
   name: string;
   email: string;
   phoneNumber: string;
-  date: string;  // You can use 'Date' type if you're converting it to a Date object
-  time: string;  // You can use 'Date' type if you're converting it to a Date object
+  date: string; // Use 'string' or 'Date' depending on your data format
+  time: string; // Use 'string' or 'Date' depending on your data format
   hall: string;
 }
 
-export default function ViewEventsScreen() {
-  const [events, setEvents] = useState<Event[]>([]); // Use Event[] to type the events array
-  const [loading, setLoading] = useState(true); // State to handle loading state
+type ViewEventsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ViewEvents'>;
 
-  // Fetch events from the backend when the component mounts
+export default function ViewEventsScreen() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const navigation = useNavigation<ViewEventsScreenNavigationProp>();
+
+  // Fetch events when the component mounts
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('http://192.168.29.122:5000/api/events'); // Replace with your backend URL
-        setEvents(response.data); // Set the fetched events
-        setLoading(false); // Set loading to false after data is fetched
+        const response = await axios.get('http://192.168.29.122:5000/api/events');
+        setEvents(response.data);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching events:', error);
-        setLoading(false); // Stop loading even if there's an error
+        setLoading(false);
       }
     };
 
     fetchEvents();
   }, []);
+
+  const handleEditEvent = (eventId: string) => {
+    navigation.navigate('EditEvent', { eventId });
+  };
 
   if (loading) {
     return (
@@ -53,15 +64,27 @@ export default function ViewEventsScreen() {
     <View style={styles.container}>
       <FlatList
         data={events}
-        keyExtractor={(item) => item._id} // Assuming MongoDB generates _id for each event
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.eventContainer}>
             <Text style={styles.eventText}>Name: {item.name}</Text>
             <Text style={styles.eventText}>Email: {item.email}</Text>
             <Text style={styles.eventText}>Phone: {item.phoneNumber}</Text>
-            <Text style={styles.eventText}>Date: {new Date(item.date).toLocaleDateString()}</Text>
-            <Text style={styles.eventText}>Time: {new Date(item.time).toLocaleTimeString()}</Text>
+            <Text style={styles.eventText}>
+              Date: {new Date(item.date).toLocaleDateString()}
+            </Text>
+            <Text style={styles.eventText}>
+              Time: {new Date(item.time).toLocaleTimeString()}
+            </Text>
             <Text style={styles.eventText}>Hall: {item.hall}</Text>
+
+            {/* Add Edit Button */}
+            <TouchableOpacity
+              onPress={() => handleEditEvent(item._id)}
+              style={styles.editButton}
+            >
+              <Text style={styles.editButtonText}>Edit</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -70,6 +93,7 @@ export default function ViewEventsScreen() {
 }
 
 const styles = StyleSheet.create({
+  // ... (Include your existing styles here)
   container: {
     flex: 1,
     backgroundColor: '#000',
@@ -88,6 +112,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   eventText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  editButton: {
+    backgroundColor: '#00adf5',
+    padding: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  editButtonText: {
     color: '#fff',
     fontSize: 16,
   },

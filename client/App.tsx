@@ -8,6 +8,7 @@ import CreateEventScreen from './src/screens/CreateEventScreen';
 import 'react-native-gesture-handler';
 import { RootStackParamList } from './src/types/Navigation'; // Import the type
 import ViewEventScreen from './src/screens/ViewEventScreen'
+import EditEventScreen from './src/screens/EditEventScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -20,6 +21,7 @@ function App(): React.JSX.Element {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
           <Stack.Screen name="ViewEvents" component={ViewEventScreen} />
+          <Stack.Screen name="EditEvent" component={EditEventScreen} />
         </Stack.Navigator>
       </SafeAreaView>
     </NavigationContainer>

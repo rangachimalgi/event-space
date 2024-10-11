@@ -18,7 +18,7 @@ export default function HomeScreen() {
   const onValueChange = (_: any, newDate: Date | undefined) => {
     setShowPicker(false);
     if (newDate) {
-        setSelectedDate(newDate);
+      setSelectedDate(newDate);
     }
   };
 
@@ -27,20 +27,18 @@ export default function HomeScreen() {
   };
 
   const handleCreateEvent = () => {
-    // Navigate to CreateEventScreen
     navigation.navigate('CreateEvent');
   };
 
   const handleViewEvents = () => {
-    // Navigate to ViewEventsScreen (adjust this to match your actual screen name)
-    navigation.navigate('ViewEvents');
+    navigation.navigate('ViewEvents'); // Navigate to the ViewEventsScreen
   };
 
   const startColorAnimation = () => {
     Animated.loop(
       Animated.timing(colorShift, {
         toValue: 1,
-        duration: 2000, // duration of one cycle
+        duration: 2000,
         easing: Easing.linear,
         useNativeDriver: false,
       })
@@ -55,12 +53,12 @@ export default function HomeScreen() {
 
   const buttonBorderColor = colorShift.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: ['#ff00ff', '#00ffff', '#ff00ff'], // Cycle between these colors
+    outputRange: ['#ff00ff', '#00ffff', '#ff00ff'],
   });
 
   const buttonShadowColor = colorShift.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: ['#ff00ff', '#00ffff', '#ff00ff'], // Cycle between these colors
+    outputRange: ['#ff00ff', '#00ffff', '#ff00ff'],
   });
 
   return (
@@ -72,7 +70,7 @@ export default function HomeScreen() {
       </TouchableOpacity>
 
       <Calendar
-        current={selectedDate.toISOString().split('T')[0]}  // Format Date to string
+        current={selectedDate.toISOString().split('T')[0]}
         minDate={'2020-05-10'}
         maxDate={'2025-05-30'}
         onDayPress={(day: any) => {
@@ -116,7 +114,7 @@ export default function HomeScreen() {
       <TouchableOpacity
         onPressIn={startColorAnimation}
         onPressOut={stopColorAnimation}
-        onPress={handleCreateEvent} // Navigate to Create Event
+        onPress={handleCreateEvent}
         style={styles.button}
       >
         <Animated.View
@@ -133,39 +131,25 @@ export default function HomeScreen() {
       </TouchableOpacity>
 
       {/* Button for Viewing Events */}
-      <TouchableOpacity
-        onPressIn={startColorAnimation}
-        onPressOut={stopColorAnimation}
-        onPress={handleViewEvents} // Navigate to View Events
-        style={styles.button}
-      >
-        <Animated.View
-          style={[
-            styles.button,
-            {
-              borderColor: buttonBorderColor,
-              shadowColor: buttonShadowColor,
-            },
-          ]}
-        >
-          <Text style={styles.buttonText}>View Events</Text>
-        </Animated.View>
+      <TouchableOpacity onPress={handleViewEvents} style={styles.button}>
+        <Text style={styles.buttonText}>View Events</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // Include your existing styles here
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#000', // Set background to black
+    backgroundColor: '#000',
   },
   dateText: {
     fontSize: 24,
     textAlign: 'center',
     marginBottom: 16,
-    color: '#fff', // White text color
+    color: '#fff',
   },
   button: {
     backgroundColor: '#000',
