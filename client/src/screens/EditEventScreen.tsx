@@ -27,7 +27,7 @@ export default function EditEventScreen({ route, navigation }: any) {
     useEffect(() => {
         const fetchEvent = async () => {
             try {
-                const response = await axios.get(`http://192.168.29.122:5000/api/events/${eventId}`);
+                const response = await axios.get(`https://sincerely-popular-serval.loca.lt//api/events/api/events/${eventId}`);
                 setEvent(response.data); // Set the event data
                 setLoading(false);
             } catch (error) {
@@ -51,7 +51,7 @@ export default function EditEventScreen({ route, navigation }: any) {
             console.log('Updating event with data:', eventData);
 
             await axios.put(
-                `http://192.168.29.122:5000/api/events/${eventId}`,
+                `https://sincerely-popular-serval.ngrok-free.app/api/events/api/events/${eventId}`,
                 eventData
             );
 

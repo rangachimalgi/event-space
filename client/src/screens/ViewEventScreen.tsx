@@ -28,7 +28,7 @@ export default function ViewEventsScreen() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('http://192.168.29.122:5000/api/events');
+          const response = await axios.get('https://sincerely-popular-serval.ngrok-free.app/api/events');
         setEvents(response.data);
         setLoading(false);
       } catch (error) {

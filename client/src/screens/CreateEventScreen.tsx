@@ -37,7 +37,7 @@ export default function CreateEventScreen() {
       hall: selectedHall,
     };
 
-    axios.post('http://192.168.29.122:5000/api/events', eventDetails)
+    axios.post('https://sincerely-popular-serval.ngrok-free.app/api/events/api/events', eventDetails)
       .then((response) => {
         Alert.alert('Event Created', 'Your event has been successfully created!', [
           {

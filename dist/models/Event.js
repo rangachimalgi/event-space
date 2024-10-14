@@ -30,7 +30,7 @@ const eventSchema = new mongoose_1.Schema({
     email: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     date: { type: Date, required: true },
-    time: { type: Date, required: true },
+    time: { type: String, required: true },
     hall: { type: String, required: true }
 });
 // Create a Mongoose model for the event and export it

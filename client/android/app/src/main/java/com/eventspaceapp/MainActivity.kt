@@ -1,7 +1,9 @@
 package com.eventspaceapp
 
+import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.zoontek.rnbootsplash.RNBootSplash // Import the BootSplash library
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 
@@ -12,6 +14,14 @@ class MainActivity : ReactActivity() {
    * rendering of the component.
    */
   override fun getMainComponentName(): String = "EventSpaceApp"
+
+  /**
+   * Initialize the splash screen.
+   */
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(null)
+    RNBootSplash.init(this, R.style.AppTheme) // Pass the theme resource ID
+  }
 
   /**
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
