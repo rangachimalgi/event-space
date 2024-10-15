@@ -9,6 +9,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "mongoose": "^8.7.1",
+    "react-native-config": "^1.5.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   },
