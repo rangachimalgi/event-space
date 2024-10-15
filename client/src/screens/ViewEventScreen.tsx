@@ -78,13 +78,19 @@ export default function ViewEventsScreen() {
     filterEvents();
   }, [filterDate, filterHall, events]);
 
+  // Clear filters function
+  const clearFilters = () => {
+    setFilterDate(undefined);
+    setFilterHall('');
+    setFilteredEvents(events); // Reset filteredEvents to all events
+  };
+
   const handleEditEvent = (eventId: string) => {
     navigation.navigate('EditEvent', { eventId });
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
-    if (event.type === "dismissed") {
-      // If the picker is dismissed, do nothing (no filtering applied)
+    if (event.type === 'dismissed') {
       setShowDatePicker(false);
       return;
     }
@@ -126,27 +132,21 @@ export default function ViewEventsScreen() {
     <View style={styles.container}>
       {/* Filter Inputs */}
       <View style={styles.filterContainer}>
-        {/* Date Picker */}
         <Button onPress={() => setShowDatePicker(true)} title="Pick a Date" color="#00adf5" />
-        {filterDate && (
-          <Text style={styles.dateText}>Selected Date: {filterDate.toLocaleDateString()}</Text>
-        )}
+        {filterDate && <Text style={styles.dateText}>Selected Date: {filterDate.toLocaleDateString()}</Text>}
         {showDatePicker && (
-          <DateTimePicker
-            value={filterDate || new Date()}
-            mode="date"
-            display="default"
-            onChange={handleDateChange}
-          />
+          <DateTimePicker value={filterDate || new Date()} mode="date" display="default" onChange={handleDateChange} />
         )}
 
-        {/* Hall Dropdown */}
         <RNPickerSelect
           onValueChange={(value) => setFilterHall(value)}
           items={hallOptions}
           placeholder={{ label: 'Filter by Hall', value: null }}
           style={pickerSelectStyles}
         />
+
+        {/* Clear Filters Button */}
+        <Button title="Clear Filters" color="#ff5c5c" onPress={clearFilters} />
       </View>
 
       {/* Display Events */}
@@ -163,7 +163,6 @@ export default function ViewEventsScreen() {
           </TouchableOpacity>
         )}
       />
-
     </View>
   );
 }
