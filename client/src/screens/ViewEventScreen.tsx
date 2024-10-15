@@ -28,7 +28,7 @@ export default function ViewEventsScreen() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-          const response = await axios.get('https://sincerely-popular-serval.ngrok-free.app/api/events');
+          const response = await axios.get('https://event-space.onrender.com/api/events');
         setEvents(response.data);
         setLoading(false);
       } catch (error) {
