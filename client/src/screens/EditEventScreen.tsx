@@ -4,7 +4,7 @@ import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 // Define the event interface
-interface Event {
+interface EventData {
     _id: string;
     name: string;
     email: string;
@@ -17,7 +17,7 @@ interface Event {
 export default function EditEventScreen({ route, navigation }: any) {
     const { eventId } = route.params; // Get the event ID from the route params
 
-    const [event, setEvent] = useState<Event | null>(null); // Store the event data
+    const [event, setEvent] = useState<EventData | null>(null); // Store the event data
     const [loading, setLoading] = useState(true);
     const [datePickerVisible, setDatePickerVisible] = useState(false);
     const [timePickerVisible, setTimePickerVisible] = useState(false);

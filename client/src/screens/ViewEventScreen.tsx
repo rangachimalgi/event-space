@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../types/Navigation'; // Adjust the path accordingly
 
 // Define the Event interface
-interface Event {
+interface EventData {
   _id: string;
   name: string;
   email: string;
@@ -21,9 +21,9 @@ interface Event {
 type ViewEventsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ViewEvents'>;
 
 export default function ViewEventsScreen() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<EventData[]>([]);
 
   // State for filters
   const [filterDate, setFilterDate] = useState<Date | undefined>(undefined);
@@ -83,17 +83,20 @@ export default function ViewEventsScreen() {
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
-    if (event.type === "dismissed") { 
+    if (event.type === "dismissed") {
       // If the picker is dismissed, do nothing (no filtering applied)
       setShowDatePicker(false);
       return;
     }
-  
+
     const currentDate = selectedDate || filterDate;
     setShowDatePicker(Platform.OS === 'ios'); // Close the picker on Android
     setFilterDate(currentDate); // Only set the date if selected
   };
-  
+
+  const handleEventPress = (event: EventData) => {
+    navigation.navigate('EventDetail', { event });
+  };
 
   const hallOptions = [
     { label: 'All', value: 'Hall' },
@@ -151,28 +154,16 @@ export default function ViewEventsScreen() {
         data={filteredEvents}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <View style={styles.eventContainer}>
-            <Text style={styles.eventText}>Name: {item.name}</Text>
-            <Text style={styles.eventText}>Email: {item.email}</Text>
-            <Text style={styles.eventText}>Phone: {item.phoneNumber}</Text>
-            <Text style={styles.eventText}>
-              Date: {new Date(item.date).toLocaleDateString()}
-            </Text>
-            <Text style={styles.eventText}>
-              Time: {new Date(item.time).toLocaleTimeString()}
-            </Text>
-            <Text style={styles.eventText}>Hall: {item.hall}</Text>
-
-            {/* Edit Button */}
-            <TouchableOpacity
-              onPress={() => handleEditEvent(item._id)}
-              style={styles.editButton}
-            >
-              <Text style={styles.editButtonText}>Edit</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => handleEventPress(item)}>
+            <View style={styles.eventContainer}>
+              <Text style={styles.eventName}>{item.name}</Text>
+              <Text style={styles.eventText}>Date: {new Date(item.date).toLocaleDateString()}</Text>
+              <Text style={styles.eventText}>Hall: {item.hall}</Text>
+            </View>
+          </TouchableOpacity>
         )}
       />
+
     </View>
   );
 }
@@ -194,6 +185,12 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 10,
     borderRadius: 10,
+  },
+  eventName: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
   eventText: {
     color: '#fff',
