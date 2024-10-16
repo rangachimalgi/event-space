@@ -163,7 +163,7 @@ export default function ViewEventsScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleEventPress(item)}>
             <View style={styles.tableRow}>
-              <Text style={styles.cell}>{item.name}</Text>
+              <Text style={styles.Eventname}>{item.name}</Text>
               <Text style={styles.cell}>{new Date(item.date).toLocaleDateString()}</Text>
               <Text style={styles.cell}>{item.hall}</Text>
             </View>
@@ -272,6 +272,12 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center', // Centers text in columns
   },
+  Eventname: {
+    color: '#fff',
+    fontSize: 14,
+    flex: 1,
+    textAlign: 'left', // Centers text in columns
+  }
 });
 
 const pickerSelectStyles = StyleSheet.create({
