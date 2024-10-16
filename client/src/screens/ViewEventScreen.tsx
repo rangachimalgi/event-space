@@ -132,7 +132,9 @@ export default function ViewEventsScreen() {
     <View style={styles.container}>
       {/* Filter Inputs */}
       <View style={styles.filterContainer}>
-        <Button onPress={() => setShowDatePicker(true)} title="Pick a Date" color="#00adf5" />
+        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.filterButton}>
+          <Text style={styles.filterButtonText}>Pick a Date</Text>
+        </TouchableOpacity>
         {filterDate && <Text style={styles.dateText}>Selected Date: {filterDate.toLocaleDateString()}</Text>}
         {showDatePicker && (
           <DateTimePicker value={filterDate || new Date()} mode="date" display="default" onChange={handleDateChange} />
@@ -146,11 +148,12 @@ export default function ViewEventsScreen() {
         />
 
         {/* Clear Filters Button */}
-        <Button title="Clear Filters" color="#ff5c5c" onPress={clearFilters} />
-      </View>
+        <TouchableOpacity onPress={clearFilters} style={[styles.filterButton, styles.clearButton]}>
+          <Text style={styles.filterButtonText}>Clear Filters</Text>
+        </TouchableOpacity>      </View>
 
-       {/* Table Headers */}
-       <View style={styles.tableHeader}>
+      {/* Table Headers */}
+      <View style={styles.tableHeader}>
         <Text style={styles.headerText}>Name</Text>
         <Text style={styles.headerText}>Date</Text>
         <Text style={styles.headerText}>Hall</Text>
@@ -188,6 +191,25 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     marginBottom: 20,
+  },
+  filterButton: {
+    backgroundColor: '#00adf5',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+  },
+  filterButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  clearButton: {
+    backgroundColor: '#ff5c5c',
   },
   tableHeader: {
     flexDirection: 'row',
