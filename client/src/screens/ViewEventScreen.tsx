@@ -149,16 +149,23 @@ export default function ViewEventsScreen() {
         <Button title="Clear Filters" color="#ff5c5c" onPress={clearFilters} />
       </View>
 
+       {/* Table Headers */}
+       <View style={styles.tableHeader}>
+        <Text style={styles.headerText}>Name</Text>
+        <Text style={styles.headerText}>Date</Text>
+        <Text style={styles.headerText}>Hall</Text>
+      </View>
+
       {/* Display Events */}
       <FlatList
         data={filteredEvents}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleEventPress(item)}>
-            <View style={styles.eventContainer}>
-              <Text style={styles.eventName}>{item.name}</Text>
-              <Text style={styles.eventText}>Date: {new Date(item.date).toLocaleDateString()}</Text>
-              <Text style={styles.eventText}>Hall: {item.hall}</Text>
+            <View style={styles.tableRow}>
+              <Text style={styles.cell}>{item.name}</Text>
+              <Text style={styles.cell}>{new Date(item.date).toLocaleDateString()}</Text>
+              <Text style={styles.cell}>{item.hall}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -179,21 +186,62 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
   },
+  filterContainer: {
+    marginBottom: 20,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: '#fff',
+    marginBottom: 5,
+  },
+  eventRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ffffff25',
+  },
+  eventName: {
+    color: '#fff',
+    fontSize: 16,
+    flex: 2, // Allow name to take up available space
+    marginRight: 10,
+  },
+  eventInfo: {
+    color: '#fff',
+    fontSize: 14,
+    flex: 1, // Equal space for date and hall
+    marginRight: 10, // Adds right margin for spacing
+  },
+  eventDate: {
+    color: '#fff',
+    fontSize: 14,
+    width: 90, // Fixed width for date
+  },
+  eventHall: {
+    color: '#fff',
+    fontSize: 14,
+    width: 80, // Fixed width for hall
+  },
   eventContainer: {
     backgroundColor: '#1c1c1c',
     padding: 15,
     marginVertical: 10,
     borderRadius: 10,
   },
-  eventName: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
   eventText: {
     color: '#fff',
     fontSize: 16,
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    flex: 1,
+    textAlign: 'center', // Centers text in columns
   },
   editButton: {
     backgroundColor: '#00adf5',
@@ -206,13 +254,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  filterContainer: {
-    marginBottom: 20,
-  },
   dateText: {
     color: '#fff',
     fontSize: 16,
     marginVertical: 10,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ffffff25',
+  },
+  cell: {
+    color: '#fff',
+    fontSize: 14,
+    flex: 1,
+    textAlign: 'center', // Centers text in columns
   },
 });
 
