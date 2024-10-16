@@ -9,6 +9,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const eventRoutes_1 = __importDefault(require("./routes/eventRoutes"));
 const db_1 = __importDefault(require("./config/db"));
 const dotenv_1 = __importDefault(require("dotenv"));
+require("./keepAlive");
 // Load environment variables from .env file
 dotenv_1.default.config(); // This ensures that process.env.PORT and other variables are loaded
 const app = (0, express_1.default)();

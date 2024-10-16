@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import eventRoutes from './routes/eventRoutes';
 import connectDB from './config/db';
 import dotenv from 'dotenv';
-import "../keepAlive.js"
+import "./keepAlive";
 
 // Load environment variables from .env file
 dotenv.config();  // This ensures that process.env.PORT and other variables are loaded
