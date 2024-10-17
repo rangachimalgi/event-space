@@ -159,7 +159,7 @@ export default function ViewEventsScreen() {
 
         {/* Clear Filters Button */}
         <TouchableOpacity onPress={clearFilters} style={[styles.filterButton, styles.clearButton]}>
-          <Text style={styles.filterButtonText}>Clear Filters</Text>
+          <Text style={styles.filterButtonTextClear}>Clear Filters</Text>
         </TouchableOpacity>
       </View>
 
@@ -204,24 +204,29 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   filterButton: {
-    backgroundColor: '#00adf5',
+    backgroundColor: '#6aedbb',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
     elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#13b3f2',
+    shadowOffset: { width: 2, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
     alignItems: 'center', // Center the text inside the button
   },
   filterButtonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  filterButtonTextClear: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
   clearButton: {
-    backgroundColor: '#ff5c5c',
+    backgroundColor: '#000000',
     marginTop: 10,
   },
   tableHeader: {
@@ -324,7 +329,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: '#666',
     borderRadius: 8,
     color: '#fff',
-    backgroundColor: '#333',
+    backgroundColor: '#000',
     paddingRight: 30,
     marginBottom: 10,
   },
@@ -333,11 +338,12 @@ const pickerSelectStyles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: '#666',
+    borderColor: '#fff',
     borderRadius: 8,
     color: '#fff',
     backgroundColor: '#333',
     paddingRight: 30,
-    marginBottom: 10,
+    marginTop: 12,
+    marginBottom: 12,
   },
 });
