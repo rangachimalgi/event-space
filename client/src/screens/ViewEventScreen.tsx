@@ -132,25 +132,36 @@ export default function ViewEventsScreen() {
     <View style={styles.container}>
       {/* Filter Inputs */}
       <View style={styles.filterContainer}>
+        {/* Pick a Date Button */}
         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.filterButton}>
           <Text style={styles.filterButtonText}>Pick a Date</Text>
         </TouchableOpacity>
+
         {filterDate && <Text style={styles.dateText}>Selected Date: {filterDate.toLocaleDateString()}</Text>}
+
+        {/* DateTimePicker */}
         {showDatePicker && (
-          <DateTimePicker value={filterDate || new Date()} mode="date" display="default" onChange={handleDateChange} />
+          <DateTimePicker
+            value={filterDate || new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
         )}
 
+        {/* Hall Picker */}
         <RNPickerSelect
           onValueChange={(value) => setFilterHall(value)}
           items={hallOptions}
-          placeholder={{ label: 'Filter by Hall', value: null }}
+          placeholder={{ label: 'Filter by Hall', value: null }}  // No <Text> element here
           style={pickerSelectStyles}
         />
 
         {/* Clear Filters Button */}
         <TouchableOpacity onPress={clearFilters} style={[styles.filterButton, styles.clearButton]}>
           <Text style={styles.filterButtonText}>Clear Filters</Text>
-        </TouchableOpacity>      </View>
+        </TouchableOpacity>
+      </View>
 
       {/* Table Headers */}
       <View style={styles.tableHeader}>
@@ -202,6 +213,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
+    alignItems: 'center', // Center the text inside the button
   },
   filterButtonText: {
     color: '#fff',
@@ -210,6 +222,7 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     backgroundColor: '#ff5c5c',
+    marginTop: 10,
   },
   tableHeader: {
     flexDirection: 'row',
