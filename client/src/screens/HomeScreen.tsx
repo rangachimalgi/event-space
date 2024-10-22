@@ -1,155 +1,169 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import MonthPicker from 'react-native-month-year-picker';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../types/Navigation'; // Adjust the path accordingly
+import { RootStackParamList } from '../types/Navigation';
+import { useFocusEffect } from '@react-navigation/native';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
+interface EventData {
+  _id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  date: string;
+  time: string;
+  hall: string;
+}
+
 export default function HomeScreen() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
-  const [colorShift] = useState(new Animated.Value(0));
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  const onValueChange = (_: any, newDate: Date | undefined) => {
-    setShowPicker(false);
-    if (newDate) {
-      setSelectedDate(newDate);
-    }
-  };
+  // Fetch the latest events
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
 
-  const showPickerModal = () => {
-    setShowPicker(true);
-  };
+      const fetchEvents = async () => {
+        try {
+          setLoading(true);
+          const response = await axios.get('https://event-space.onrender.com/api/events');
+          // Sort events by date in descending order
+          const sortedEvents = response.data.sort((a: EventData, b: EventData) => {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+          });
+          const latestEvents = sortedEvents.slice(0, 5);
+
+          if (isActive) {
+            setEvents(latestEvents);
+            setLoading(false);
+          }
+        } catch (error) {
+          console.error('Error fetching events:', error);
+          if (isActive) {
+            setLoading(false);
+          }
+        }
+      };
+
+      fetchEvents();
+
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
 
   const handleCreateEvent = () => {
     navigation.navigate('CreateEvent');
   };
 
   const handleViewEvents = () => {
-    navigation.navigate('ViewEvents'); // Navigate to the ViewEventsScreen
+    navigation.navigate('ViewEvents');
   };
 
-  const startColorAnimation = () => {
-    Animated.loop(
-      Animated.timing(colorShift, {
-        toValue: 1,
-        duration: 2000,
-        easing: Easing.linear,
-        useNativeDriver: false,
-      })
-    ).start();
+  const handleEventPress = (event: EventData) => {
+    navigation.navigate('EventDetail', { event });
   };
 
-  const stopColorAnimation = () => {
-    colorShift.stopAnimation(() => {
-      colorShift.setValue(0);
-    });
-  };
+  function toCamelCase(str: string) {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
 
-  const buttonBorderColor = colorShift.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: ['#ff00ff', '#00ffff', '#ff00ff'],
-  });
-
-  const buttonShadowColor = colorShift.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: ['#ff00ff', '#00ffff', '#ff00ff'],
-  });
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.loadingText}>Loading Events...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={showPickerModal}>
-        <Text style={styles.dateText}>
-          {selectedDate.getFullYear()} {selectedDate.getMonth() + 1}
-        </Text>
-      </TouchableOpacity>
-
-      <Calendar
-        current={selectedDate.toISOString().split('T')[0]}
-        minDate={'2020-05-10'}
-        maxDate={'2025-05-30'}
-        onDayPress={(day: any) => {
-          console.log('selected day', day);
-        }}
-        monthFormat={'yyyy MM'}
-        hideArrows={false}
-        disableAllTouchEventsForDisabledDays={true}
-        renderArrow={(direction: string) => (
-          <Text style={styles.arrow}>{direction === 'left' ? '<' : '>'}</Text>
-        )}
-        hideExtraDays={false}
-        disableMonthChange={false}
-        hideDayNames={false}
-        showWeekNumbers={false}
-        onMonthChange={(month: any) => {
-          console.log('month changed', month);
-        }}
-        enableSwipeMonths={true}
-        theme={{
-          calendarBackground: '#000',
-          textSectionTitleColor: '#fff',
-          dayTextColor: '#fff',
-          todayTextColor: '#00adf5',
-          monthTextColor: '#fff',
-          arrowColor: '#fff',
-        }}
-      />
-
-      {showPicker && (
-        <MonthPicker
-          onChange={onValueChange}
-          value={selectedDate}
-          minimumDate={new Date(2020, 4)}
-          maximumDate={new Date(2025, 4)}
-          locale="en"
+      {/* Latest Events */}
+      <Text style={styles.heading}>Latest Events</Text>
+      {events.length === 0 ? (
+        <Text style={styles.noEventsText}>No Events Found</Text>
+      ) : (
+        <FlatList
+          data={events}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleEventPress(item)}>
+              <View style={styles.eventItem}>
+                <Text style={styles.eventName}>{toCamelCase(item.name)}</Text>
+                <Text style={styles.eventDate}>{new Date(item.date).toLocaleDateString()}</Text>
+                <Text style={styles.eventHall}>{item.hall}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
         />
       )}
 
       {/* Button for Creating Event */}
-      <TouchableOpacity
-        onPressIn={startColorAnimation}
-        onPressOut={stopColorAnimation}
-        onPress={handleCreateEvent}
-        style={styles.button}
-      >
-        <Animated.View
-          style={[
-            styles.button,
-            {
-              borderColor: buttonBorderColor,
-              shadowColor: buttonShadowColor,
-            },
-          ]}
-        >
-          <Text style={styles.buttonText}>Create Event</Text>
-        </Animated.View>
+      <TouchableOpacity onPress={handleCreateEvent} style={styles.button}>
+        <Text style={styles.buttonText}>Create Event</Text>
       </TouchableOpacity>
 
       {/* Button for Viewing Events */}
       <TouchableOpacity onPress={handleViewEvents} style={styles.button}>
-        <Text style={styles.buttonText}>View Events</Text>
+        <Text style={styles.buttonText}>View All Events</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // Include your existing styles here
   container: {
     flex: 1,
     padding: 16,
     backgroundColor: '#000',
   },
-  dateText: {
+  heading: {
     fontSize: 24,
-    textAlign: 'center',
-    marginBottom: 16,
     color: '#fff',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  noEventsText: {
+    color: '#fff',
+    fontSize: 18,
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  eventItem: {
+    backgroundColor: '#1c1c1c',
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 10,
+  },
+  eventName: {
+    color: '#fff',
+    fontSize: 18,
+    marginBottom: 5,
+  },
+  eventDate: {
+    color: '#aaa',
+    fontSize: 14,
+  },
+  eventHall: {
+    color: '#aaa',
+    fontSize: 14,
   },
   button: {
     backgroundColor: '#000',
@@ -158,16 +172,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 2,
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 0 },
+    borderColor: '#665e5e',
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
-  },
-  arrow: {
-    color: '#fff',
-    fontSize: 20,
   },
 });

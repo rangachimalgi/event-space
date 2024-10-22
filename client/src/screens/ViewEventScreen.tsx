@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Platform, Button } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Platform,
+  RefreshControl,
+} from 'react-native';
 import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
@@ -18,7 +26,10 @@ interface EventData {
   hall: string;
 }
 
-type ViewEventsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ViewEvents'>;
+type ViewEventsScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'ViewEvents'
+>;
 
 export default function ViewEventsScreen() {
   const [events, setEvents] = useState<EventData[]>([]);
@@ -32,24 +43,35 @@ export default function ViewEventsScreen() {
   // State for date picker
   const [showDatePicker, setShowDatePicker] = useState(false);
 
+  const [refreshing, setRefreshing] = useState(false);
+
   const navigation = useNavigation<ViewEventsScreenNavigationProp>();
 
-  // Fetch events when the component mounts
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await axios.get('https://event-space.onrender.com/api/events');
-        setEvents(response.data);
-        setFilteredEvents(response.data); // Initially set filtered events to all events
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setLoading(false);
-      }
-    };
+  const fetchEvents = async () => {
+    try {
+      const response = await axios.get(
+        'https://event-space.onrender.com/api/events'
+      );
+      setEvents(response.data);
+      setFilteredEvents(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchEvents();
   }, []);
+
+  const onRefresh = async () => {
+    console.log('Pull-to-refresh triggered');
+    setRefreshing(true);
+    await fetchEvents();
+    setRefreshing(false);
+  };
+  
 
   // Handle filtering when date or hall changes
   useEffect(() => {
@@ -58,7 +80,7 @@ export default function ViewEventsScreen() {
 
       // Filter by date (if provided)
       if (filterDate) {
-        updatedEvents = updatedEvents.filter(event => {
+        updatedEvents = updatedEvents.filter((event) => {
           const eventDate = new Date(event.date).toLocaleDateString();
           const selectedDate = filterDate.toLocaleDateString();
           return eventDate === selectedDate;
@@ -67,7 +89,7 @@ export default function ViewEventsScreen() {
 
       // Filter by hall (if provided)
       if (filterHall) {
-        updatedEvents = updatedEvents.filter(event =>
+        updatedEvents = updatedEvents.filter((event) =>
           event.hall.toLowerCase().includes(filterHall.toLowerCase())
         );
       }
@@ -105,28 +127,12 @@ export default function ViewEventsScreen() {
   };
 
   const hallOptions = [
-    { label: 'All', value: 'Hall' },
+    { label: 'All', value: '' },
     { label: 'Hall 1', value: 'Hall 1' },
     { label: 'Hall 2', value: 'Hall 2' },
     { label: 'Hall 3', value: 'Hall 3' },
     { label: 'Hall 4', value: 'Hall 4' },
   ];
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Loading Events...</Text>
-      </View>
-    );
-  }
-
-  if (filteredEvents.length === 0) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>No Events Found</Text>
-      </View>
-    );
-  }
 
   function toCamelCase(str: string) {
     return str
@@ -136,16 +142,31 @@ export default function ViewEventsScreen() {
       .join(' '); // Join the words back into a single string
   }
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>Loading Events...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {/* Filter Inputs */}
       <View style={styles.filterContainer}>
         {/* Pick a Date Button */}
-        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.filterButton}>
+        <TouchableOpacity
+          onPress={() => setShowDatePicker(true)}
+          style={styles.filterButton}
+        >
           <Text style={styles.filterButtonText}>PICK A DATE</Text>
         </TouchableOpacity>
 
-        {filterDate && <Text style={styles.dateText}>Selected Date: {filterDate.toLocaleDateString()}</Text>}
+        {filterDate && (
+          <Text style={styles.dateText}>
+            Selected Date: {filterDate.toLocaleDateString()}
+          </Text>
+        )}
 
         {/* DateTimePicker */}
         {showDatePicker && (
@@ -161,12 +182,15 @@ export default function ViewEventsScreen() {
         <RNPickerSelect
           onValueChange={(value) => setFilterHall(value)}
           items={hallOptions}
-          placeholder={{ label: 'FILTER BY HALL', value: null }}
+          placeholder={{ label: 'FILTER BY HALL', value: '' }}
           style={pickerSelectStyles}
         />
 
         {/* Clear Filters Button */}
-        <TouchableOpacity onPress={clearFilters} style={[styles.filterButton, styles.clearButton]}>
+        <TouchableOpacity
+          onPress={clearFilters}
+          style={[styles.filterButton, styles.clearButton]}
+        >
           <Text style={styles.filterButtonTextClear}>CLEAR FILTERS</Text>
         </TouchableOpacity>
       </View>
@@ -185,13 +209,23 @@ export default function ViewEventsScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleEventPress(item)}>
             <View style={styles.tableRow}>
-            <Text style={styles.Eventname}>{toCamelCase(item.name)}</Text>
-            <Text style={styles.cell}>{new Date(item.date).toLocaleDateString()}</Text>
+              <Text style={styles.Eventname}>{toCamelCase(item.name)}</Text>
+              <Text style={styles.cell}>{new Date(item.date).toLocaleDateString()}</Text>
               <Text style={styles.cell}>{item.hall}</Text>
             </View>
           </TouchableOpacity>
         )}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        contentContainerStyle={{ flexGrow: 1 }}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.text}>No Events Found</Text>
+          </View>
+        }
+        overScrollMode="always" // This prop helps with pull-to-refresh on Android
       />
+
     </View>
   );
 }
@@ -201,6 +235,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     padding: 20,
+  },
+  emptyContainer: {
+    flex: 1, // Center the empty component
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     color: '#fff',
