@@ -22,7 +22,6 @@ export default function EditEventScreen({ route, navigation }: any) {
     const [datePickerVisible, setDatePickerVisible] = useState(false);
     const [timePickerVisible, setTimePickerVisible] = useState(false);
 
-
     // Fetch event details when the screen loads
     useEffect(() => {
         const fetchEvent = async () => {
@@ -63,7 +62,6 @@ export default function EditEventScreen({ route, navigation }: any) {
         }
     };
 
-
     if (loading || !event) {
         return (
             <View style={styles.container}>
@@ -71,31 +69,13 @@ export default function EditEventScreen({ route, navigation }: any) {
             </View>
         );
     }
-    const parseTimeString = (timeString: string): Date => {
-        // Handle different time formats
-        const [hoursStr, minutesStr] = timeString.split(':');
-        const hours = parseInt(hoursStr, 10);
-        const minutes = parseInt(minutesStr, 10);
-
-        if (isNaN(hours) || isNaN(minutes)) {
-            // Default to current time if parsing fails
-            return new Date();
-        }
-
-        const time = new Date();
-        time.setHours(hours);
-        time.setMinutes(minutes);
-        time.setSeconds(0);
-        time.setMilliseconds(0);
-        return time;
-    };
-
-
 
     const handleDateChange = (eventData: any, selectedDate?: Date) => {
-        setDatePickerVisible(Platform.OS === 'ios'); // Keep picker open on iOS
+        if (Platform.OS !== 'ios') {
+            setDatePickerVisible(false); // Close the picker on Android
+        }
         if (selectedDate) {
-            const dateString = selectedDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+            const dateString = selectedDate.toISOString();
             setEvent({ ...event, date: dateString });
         }
     };
@@ -105,14 +85,10 @@ export default function EditEventScreen({ route, navigation }: any) {
             setTimePickerVisible(false); // Close the picker on Android
         }
         if (selectedTime) {
-            const hours = selectedTime.getHours().toString().padStart(2, '0');
-            const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
-            const timeString = `${hours}:${minutes}`; // Format time as HH:MM
+            const timeString = selectedTime.toISOString();
             setEvent({ ...event, time: timeString });
         }
     };
-
-
 
     return (
         <View style={styles.container}>
@@ -144,7 +120,7 @@ export default function EditEventScreen({ route, navigation }: any) {
                 <TextInput
                     style={styles.input}
                     placeholder="Date"
-                    value={event.date}
+                    value={new Date(event.date).toLocaleDateString()}
                     editable={false}
                 />
             </TouchableOpacity>
@@ -156,18 +132,19 @@ export default function EditEventScreen({ route, navigation }: any) {
                     onChange={handleDateChange}
                 />
             )}
+
             {/* Time Picker */}
             <TouchableOpacity onPress={() => setTimePickerVisible(true)}>
                 <TextInput
                     style={styles.input}
                     placeholder="Time"
-                    value={event.time}
+                    value={new Date(event.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     editable={false}
                 />
             </TouchableOpacity>
             {timePickerVisible && (
                 <DateTimePicker
-                    value={parseTimeString(event.time)}
+                    value={new Date(event.time)}
                     mode="time"
                     display="default"
                     onChange={handleTimeChange}
