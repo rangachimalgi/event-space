@@ -134,7 +134,7 @@ export default function ViewEventsScreen() {
       <View style={styles.filterContainer}>
         {/* Pick a Date Button */}
         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.filterButton}>
-          <Text style={styles.filterButtonText}>pick a date</Text>
+          <Text style={styles.filterButtonText}>PICK A DATE</Text>
         </TouchableOpacity>
 
         {filterDate && <Text style={styles.dateText}>Selected Date: {filterDate.toLocaleDateString()}</Text>}
@@ -153,21 +153,21 @@ export default function ViewEventsScreen() {
         <RNPickerSelect
           onValueChange={(value) => setFilterHall(value)}
           items={hallOptions}
-          placeholder={{ label: 'filter by hall', value: null }}  // No <Text> element here
+          placeholder={{ label: 'FILTER BY HALL', value: null }}
           style={pickerSelectStyles}
         />
 
         {/* Clear Filters Button */}
         <TouchableOpacity onPress={clearFilters} style={[styles.filterButton, styles.clearButton]}>
-          <Text style={styles.filterButtonTextClear}>clear filters</Text>
+          <Text style={styles.filterButtonTextClear}>CLEAR FILTERS</Text>
         </TouchableOpacity>
       </View>
 
       {/* Table Headers */}
       <View style={styles.tableHeader}>
-        <Text style={styles.headerText}>Name</Text>
-        <Text style={styles.headerText}>Date</Text>
-        <Text style={styles.headerText}>Hall</Text>
+        <Text style={styles.headerText}>NAME</Text>
+        <Text style={styles.headerText}>DATE</Text>
+        <Text style={styles.headerText}>HALL</Text>
       </View>
 
       {/* Display Events */}
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   },
   Eventname: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 15,
     flex: 1,
     textAlign: 'left', // Centers text in columns
   }
