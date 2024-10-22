@@ -90,7 +90,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       {/* Latest Events */}
-      <Text style={styles.heading}>Latest Events</Text>
+      <Text style={styles.heading}>Latest Booked Events</Text>
       {events.length === 0 ? (
         <Text style={styles.noEventsText}>No Events Found</Text>
       ) : (
