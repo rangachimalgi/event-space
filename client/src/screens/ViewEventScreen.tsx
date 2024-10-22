@@ -128,6 +128,14 @@ export default function ViewEventsScreen() {
     );
   }
 
+  function toCamelCase(str: string) {
+    return str
+      .toLowerCase() // Set the string to lowercase
+      .split(' ') // Split the string by spaces into an array of words
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
+      .join(' '); // Join the words back into a single string
+  }
+
   return (
     <View style={styles.container}>
       {/* Filter Inputs */}
@@ -177,8 +185,8 @@ export default function ViewEventsScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleEventPress(item)}>
             <View style={styles.tableRow}>
-              <Text style={styles.Eventname}>{item.name}</Text>
-              <Text style={styles.cell}>{new Date(item.date).toLocaleDateString()}</Text>
+            <Text style={styles.Eventname}>{toCamelCase(item.name)}</Text>
+            <Text style={styles.cell}>{new Date(item.date).toLocaleDateString()}</Text>
               <Text style={styles.cell}>{item.hall}</Text>
             </View>
           </TouchableOpacity>
@@ -316,7 +324,7 @@ const styles = StyleSheet.create({
   },
   Eventname: {
     color: '#fff',
-    fontSize: 15,
+    fontSize: 14,
     flex: 1,
     textAlign: 'left', // Centers text in columns
   }
