@@ -134,7 +134,7 @@ export default function ViewEventsScreen() {
       <View style={styles.filterContainer}>
         {/* Pick a Date Button */}
         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.filterButton}>
-          <Text style={styles.filterButtonText}>Pick a Date</Text>
+          <Text style={styles.filterButtonText}>pick a date</Text>
         </TouchableOpacity>
 
         {filterDate && <Text style={styles.dateText}>Selected Date: {filterDate.toLocaleDateString()}</Text>}
@@ -153,13 +153,13 @@ export default function ViewEventsScreen() {
         <RNPickerSelect
           onValueChange={(value) => setFilterHall(value)}
           items={hallOptions}
-          placeholder={{ label: 'Filter by Hall', value: null }}  // No <Text> element here
+          placeholder={{ label: 'filter by hall', value: null }}  // No <Text> element here
           style={pickerSelectStyles}
         />
 
         {/* Clear Filters Button */}
         <TouchableOpacity onPress={clearFilters} style={[styles.filterButton, styles.clearButton]}>
-          <Text style={styles.filterButtonTextClear}>Clear Filters</Text>
+          <Text style={styles.filterButtonTextClear}>clear filters</Text>
         </TouchableOpacity>
       </View>
 
@@ -204,19 +204,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   filterButton: {
-    backgroundColor: '#6aedbb',
+    backgroundColor: '#000000', // Black background to contrast with white
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    elevation: 3,
-    shadowColor: '#13b3f2',
-    shadowOffset: { width: 2, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
+    elevation: 5, // Increase elevation for more prominent shadow
+    shadowColor: '#fff', // White shadow color
+    shadowOffset: { width: 2, height: 4 }, // Make shadow offset larger to create more depth
+    shadowOpacity: 0.7, // Increase opacity to make the shadow more visible
+    shadowRadius: 6, // Increase radius to blur the shadow and make it more prominent
+    borderWidth: 2, // Add white border for more emphasis
+    borderColor: '#665e5e', // White border
     alignItems: 'center', // Center the text inside the button
   },
   filterButtonText: {
-    color: '#000',
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },

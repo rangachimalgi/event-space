@@ -22,6 +22,10 @@ app.use(cors({
 // Routes
 app.use('/api/events', eventRoutes);
 
+app.get('/', (req, res) => {
+  res.send('Server is running');
+});
+
 const portEnv = process.env.PORT;
 const PORT: number = portEnv ? parseInt(portEnv, 10) : 5000;
 
