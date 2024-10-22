@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   deleteButton: {
-    backgroundColor: 'red',
+    backgroundColor: '#636161',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   deleteButtonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 14,
   },
   dateText: {
