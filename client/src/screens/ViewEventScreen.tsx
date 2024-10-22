@@ -7,15 +7,15 @@ import {
   TouchableOpacity,
   Platform,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../types/Navigation'; // Adjust the path accordingly
+import { RootStackParamList } from '../types/Navigation';
 
-// Define the Event interface
 interface EventData {
   _id: string;
   name: string;
@@ -71,7 +71,6 @@ export default function ViewEventsScreen() {
     await fetchEvents();
     setRefreshing(false);
   };
-  
 
   // Handle filtering when date or hall changes
   useEffect(() => {
@@ -126,6 +125,46 @@ export default function ViewEventsScreen() {
     navigation.navigate('EventDetail', { event });
   };
 
+  // Delete event function
+  const handleDeleteEvent = (eventId: string) => {
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this event?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // Delete event from server
+              await axios.delete(
+                `https://event-space.onrender.com/api/events/${eventId}`
+              );
+              // Update local state
+              setEvents((prevEvents) =>
+                prevEvents.filter((event) => event._id !== eventId)
+              );
+              setFilteredEvents((prevEvents) =>
+                prevEvents.filter((event) => event._id !== eventId)
+              );
+            } catch (error) {
+              console.error('Error deleting event:', error);
+              Alert.alert(
+                'Error',
+                'Failed to delete the event. Please try again.'
+              );
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const hallOptions = [
     { label: 'All', value: '' },
     { label: 'Hall 1', value: 'Hall 1' },
@@ -136,10 +175,10 @@ export default function ViewEventsScreen() {
 
   function toCamelCase(str: string) {
     return str
-      .toLowerCase() // Set the string to lowercase
-      .split(' ') // Split the string by spaces into an array of words
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
-      .join(' '); // Join the words back into a single string
+      .toLowerCase()
+      .split(' ')
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 
   if (loading) {
@@ -197,9 +236,10 @@ export default function ViewEventsScreen() {
 
       {/* Table Headers */}
       <View style={styles.tableHeader}>
-        <Text style={styles.headerText}>NAME</Text>
+        <Text style={styles.nameHeaderText}>NAME</Text>
         <Text style={styles.headerText}>DATE</Text>
         <Text style={styles.headerText}>HALL</Text>
+        <Text style={styles.headerText}>ACTION</Text>
       </View>
 
       {/* Display Events */}
@@ -207,13 +247,35 @@ export default function ViewEventsScreen() {
         data={filteredEvents}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleEventPress(item)}>
-            <View style={styles.tableRow}>
+          <View style={styles.tableRow}>
+            <TouchableOpacity
+              onPress={() => handleEventPress(item)}
+              style={styles.nameCell}
+            >
               <Text style={styles.Eventname}>{toCamelCase(item.name)}</Text>
-              <Text style={styles.cell}>{new Date(item.date).toLocaleDateString()}</Text>
-              <Text style={styles.cell}>{item.hall}</Text>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleEventPress(item)}
+              style={styles.cell}
+            >
+              <Text style={styles.cellText}>
+                {new Date(item.date).toLocaleDateString()}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleEventPress(item)}
+              style={styles.cell}
+            >
+              <Text style={styles.cellText}>{item.hall}</Text>
+            </TouchableOpacity>
+            {/* Delete Button */}
+            <TouchableOpacity
+              onPress={() => handleDeleteEvent(item._id)}
+              style={styles.deleteButton}
+            >
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
+          </View>
         )}
         refreshing={refreshing}
         onRefresh={onRefresh}
@@ -223,9 +285,8 @@ export default function ViewEventsScreen() {
             <Text style={styles.text}>No Events Found</Text>
           </View>
         }
-        overScrollMode="always" // This prop helps with pull-to-refresh on Android
+        overScrollMode="always"
       />
-
     </View>
   );
 }
@@ -251,18 +312,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   filterButton: {
-    backgroundColor: '#000000', // Black background to contrast with white
+    backgroundColor: '#000000',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    elevation: 5, // Increase elevation for more prominent shadow
-    shadowColor: '#fff', // White shadow color
-    shadowOffset: { width: 2, height: 4 }, // Make shadow offset larger to create more depth
-    shadowOpacity: 0.7, // Increase opacity to make the shadow more visible
-    shadowRadius: 6, // Increase radius to blur the shadow and make it more prominent
-    borderWidth: 2, // Add white border for more emphasis
-    borderColor: '#665e5e', // White border
-    alignItems: 'center', // Center the text inside the button
+    elevation: 5,
+    shadowColor: '#fff',
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 0.7,
+    shadowRadius: 6,
+    borderWidth: 2,
+    borderColor: '#665e5e',
+    alignItems: 'center',
   },
   filterButtonText: {
     color: '#fff',
@@ -280,93 +341,66 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 2,
     borderBottomColor: '#fff',
     marginBottom: 5,
   },
-  eventRow: {
+  tableRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ffffff25',
   },
-  eventName: {
+  nameHeaderText: {
     color: '#fff',
     fontSize: 16,
-    flex: 2, // Allow name to take up available space
-    marginRight: 10,
-  },
-  eventInfo: {
-    color: '#fff',
-    fontSize: 14,
-    flex: 1, // Equal space for date and hall
-    marginRight: 10, // Adds right margin for spacing
-  },
-  eventDate: {
-    color: '#fff',
-    fontSize: 14,
-    width: 90, // Fixed width for date
-  },
-  eventHall: {
-    color: '#fff',
-    fontSize: 14,
-    width: 80, // Fixed width for hall
-  },
-  eventContainer: {
-    backgroundColor: '#1c1c1c',
-    padding: 15,
-    marginVertical: 10,
-    borderRadius: 10,
-  },
-  eventText: {
-    color: '#fff',
-    fontSize: 16,
+    fontWeight: 'bold',
+    flex: 1.5,
+    textAlign: 'left',
   },
   headerText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
     flex: 1,
-    textAlign: 'center', // Centers text in columns
+    textAlign: 'center',
   },
-  editButton: {
-    backgroundColor: '#00adf5',
-    padding: 8,
-    borderRadius: 8,
+  nameCell: {
+    flex: 1.5,
+  },
+  cell: {
+    flex: 1,
     alignItems: 'center',
-    marginTop: 10,
   },
-  editButtonText: {
+  cellText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
+  },
+  Eventname: {
+    color: '#fff',
+    fontSize: 14,
+    textAlign: 'left',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteButtonText: {
+    color: '#fff',
+    fontSize: 14,
   },
   dateText: {
     color: '#fff',
     fontSize: 16,
     marginVertical: 10,
   },
-  tableRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ffffff25',
-  },
-  cell: {
-    color: '#fff',
-    fontSize: 14,
-    flex: 1,
-    textAlign: 'center', // Centers text in columns
-  },
-  Eventname: {
-    color: '#fff',
-    fontSize: 14,
-    flex: 1,
-    textAlign: 'left', // Centers text in columns
-  }
 });
 
 const pickerSelectStyles = StyleSheet.create({
